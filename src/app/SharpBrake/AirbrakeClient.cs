@@ -3,9 +3,7 @@ using System.Configuration;
 using System.IO;
 using System.Net;
 using System.Text;
-
 using Common.Logging;
-
 using SharpBrake.Serialization;
 
 namespace SharpBrake
@@ -15,9 +13,9 @@ namespace SharpBrake
     /// </summary>
     public class AirbrakeClient
     {
-        private readonly AirbrakeNoticeBuilder builder;
-        private readonly AirbrakeConfiguration configuration;
-        private readonly ILog log;
+        private readonly AirbrakeNoticeBuilder _builder;
+        private readonly AirbrakeConfiguration _configuration;
+        private readonly ILog _log;
 
 
         /// <summary>
@@ -38,9 +36,9 @@ namespace SharpBrake
             if (configuration == null)
                 throw new ArgumentNullException("configuration");
 
-            this.configuration = configuration;
-            this.builder = new AirbrakeNoticeBuilder(configuration);
-            this.log = LogManager.GetLogger(GetType());
+            _configuration = configuration;
+            _builder = new AirbrakeNoticeBuilder(configuration);
+            _log = LogManager.GetLogger(GetType());
         }
 
 
@@ -56,7 +54,7 @@ namespace SharpBrake
         /// <param name="exception">The e.</param>
         public void Send(Exception exception)
         {
-            AirbrakeNotice notice = this.builder.Notice(exception);
+            var notice = _builder.Notice(exception);
 
             //TODO: set up request, session and server headers
             // Why would that be necessary, it's set in Send(AirbrakeNotice), isn't it? - @asbjornu
@@ -72,7 +70,7 @@ namespace SharpBrake
         /// <param name="notice">The notice.</param>
         public void Send(AirbrakeNotice notice)
         {
-            this.log.Debug(f => f("{0}.Send({1})", GetType(), notice));
+            _log.Debug(f => f("{0}.Send({1})", GetType(), notice));
 
             try
             {
@@ -82,19 +80,19 @@ namespace SharpBrake
                     // If none is set, just return... throwing an exception is pointless, since one was already thrown!
                     if (String.IsNullOrEmpty(ConfigurationManager.AppSettings["Airbrake.ApiKey"]))
                     {
-                        this.log.Fatal("No 'Airbrake.ApiKey' found. Please define one in AppSettings.");
+                        _log.Fatal("No 'Airbrake.ApiKey' found. Please define one in AppSettings.");
                         return;
                     }
 
-                    notice.ApiKey = this.builder.Configuration.ApiKey;
+                    notice.ApiKey = _builder.Configuration.ApiKey;
                 }
 
                 // Create the web request
-                var request = WebRequest.Create(this.configuration.ServerUri) as HttpWebRequest;
+                var request = WebRequest.Create(_configuration.ServerUri) as HttpWebRequest;
 
                 if (request == null)
                 {
-                    this.log.Fatal(f => f("Couldn't create a request to '{0}'.", this.configuration.ServerUri));
+                    _log.Fatal(f => f("Couldn't create a request to '{0}'.", _configuration.ServerUri));
                     return;
                 }
 
@@ -114,7 +112,7 @@ namespace SharpBrake
             }
             catch (Exception exception)
             {
-                this.log.Fatal("An error occurred while trying to send to Airbrake.", exception);
+                _log.Fatal("An error occurred while trying to send to Airbrake.", exception);
             }
         }
 
@@ -123,7 +121,7 @@ namespace SharpBrake
         {
             if (response == null)
             {
-                this.log.Fatal(f => f("No response received!"));
+                _log.Fatal(f => f("No response received!"));
                 return;
             }
 
@@ -137,13 +135,13 @@ namespace SharpBrake
                 using (var sr = new StreamReader(responseStream))
                 {
                     responseBody = sr.ReadToEnd();
-                    this.log.Debug(f => f("Received from Airbrake.\n{0}", responseBody));
+                    _log.Debug(f => f("Received from Airbrake.\n{0}", responseBody));
                 }
             }
 
             if (RequestEnd != null)
             {
-                RequestEndEventArgs e = new RequestEndEventArgs(request, response, responseBody);
+                var e = new RequestEndEventArgs(request, response, responseBody);
                 RequestEnd(this, e);
             }
         }
@@ -151,18 +149,18 @@ namespace SharpBrake
 
         private void RequestCallback(IAsyncResult result)
         {
-            this.log.Debug(f => f("{0}.RequestCallback({1})", GetType(), result));
+            _log.Debug(f => f("{0}.RequestCallback({1})", GetType(), result));
 
             // Get it back
             var request = result.AsyncState as HttpWebRequest;
 
             if (request == null)
             {
-                this.log.Fatal(
+                _log.Fatal(
                     f => f(
                         "{0}.AsyncState was null or not of type {1}.",
-                        typeof(IAsyncResult),
-                        typeof(HttpWebRequest)));
+                        typeof (IAsyncResult),
+                        typeof (HttpWebRequest)));
                 return;
             }
 
@@ -176,7 +174,7 @@ namespace SharpBrake
             catch (WebException exception)
             {
                 // Since an exception was already thrown, allowing another one to bubble up is pointless
-                this.log.Fatal("An error occurred while retrieving the web response", exception);
+                _log.Fatal("An error occurred while retrieving the web response", exception);
                 response = exception.Response;
             }
 
@@ -187,14 +185,14 @@ namespace SharpBrake
         private void SetRequestBody(WebRequest request, AirbrakeNotice notice)
         {
             var serializer = new CleanXmlSerializer<AirbrakeNotice>();
-            string xml = serializer.ToXml(notice);
+            var xml = serializer.ToXml(notice);
 
-            this.log.Debug(f => f("Sending the following to '{0}':\n{1}", request.RequestUri, xml));
+            _log.Debug(f => f("Sending the following to '{0}':\n{1}", request.RequestUri, xml));
 
-            byte[] payload = Encoding.UTF8.GetBytes(xml);
+            var payload = Encoding.UTF8.GetBytes(xml);
             request.ContentLength = payload.Length;
 
-            using (Stream stream = request.GetRequestStream())
+            using (var stream = request.GetRequestStream())
             {
                 stream.Write(payload, 0, payload.Length);
             }

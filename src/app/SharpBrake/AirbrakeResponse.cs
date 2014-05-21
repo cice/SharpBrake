@@ -3,9 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Xml;
-
 using Common.Logging;
-
 using SharpBrake.Serialization;
 
 namespace SharpBrake
@@ -15,15 +13,14 @@ namespace SharpBrake
     /// </summary>
     public class AirbrakeResponse
     {
-        private readonly string content;
-        private readonly long contentLength;
-        private readonly string contentType;
-        private readonly WebHeaderCollection headers;
-        private readonly bool isFromCache;
-        private readonly bool isMutuallyAuthenticated;
-        private readonly ILog log;
-        private readonly Uri responseUri;
-        private AirbrakeResponseError[] errors;
+        private readonly string _content;
+        private readonly long _contentLength;
+        private readonly string _contentType;
+        private readonly WebHeaderCollection _headers;
+        private readonly bool _isFromCache;
+        private readonly bool _isMutuallyAuthenticated;
+        private readonly Uri _responseUri;
+        private AirbrakeResponseError[] _errors;
 
 
         /// <summary>
@@ -33,20 +30,20 @@ namespace SharpBrake
         /// <param name="content">The content.</param>
         public AirbrakeResponse(WebResponse response, string content)
         {
-            this.log = LogManager.GetLogger(GetType());
-            this.content = content;
-            this.errors = new AirbrakeResponseError[0];
+            var log = LogManager.GetLogger(GetType());
+            _content = content;
+            _errors = new AirbrakeResponseError[0];
 
             if (response != null)
             {
                 // TryGet is needed because the default behavior of WebResponse is to throw NotImplementedException
                 // when a method isn't overridden by a deriving class, instead of declaring the method as abstract.
-                this.contentLength = response.TryGet(x => x.ContentLength);
-                this.contentType = response.TryGet(x => x.ContentType);
-                this.headers = response.TryGet(x => x.Headers);
-                this.isFromCache = response.TryGet(x => x.IsFromCache);
-                this.isMutuallyAuthenticated = response.TryGet(x => x.IsMutuallyAuthenticated);
-                this.responseUri = response.TryGet(x => x.ResponseUri);
+                _contentLength = response.TryGet(x => x.ContentLength);
+                _contentType = response.TryGet(x => x.ContentType);
+                _headers = response.TryGet(x => x.Headers);
+                _isFromCache = response.TryGet(x => x.IsFromCache);
+                _isMutuallyAuthenticated = response.TryGet(x => x.IsMutuallyAuthenticated);
+                _responseUri = response.TryGet(x => x.ResponseUri);
             }
 
             try
@@ -55,9 +52,9 @@ namespace SharpBrake
             }
             catch (Exception exception)
             {
-                this.log.Fatal(f => f(
+                log.Fatal(f => f(
                     "An error occurred while deserializing the following content:\n{0}", content),
-                               exception);
+                    exception);
             }
         }
 
@@ -67,7 +64,7 @@ namespace SharpBrake
         /// </summary>
         public string Content
         {
-            get { return this.content; }
+            get { return _content; }
         }
 
         /// <summary>
@@ -78,7 +75,7 @@ namespace SharpBrake
         /// </value>
         public long ContentLength
         {
-            get { return this.contentLength; }
+            get { return _contentLength; }
         }
 
         /// <summary>
@@ -89,7 +86,7 @@ namespace SharpBrake
         /// </value>
         public string ContentType
         {
-            get { return this.contentType; }
+            get { return _contentType; }
         }
 
         /// <summary>
@@ -97,7 +94,7 @@ namespace SharpBrake
         /// </summary>
         public AirbrakeResponseError[] Errors
         {
-            get { return this.errors; }
+            get { return _errors; }
         }
 
         /// <summary>
@@ -105,7 +102,7 @@ namespace SharpBrake
         /// </summary>
         public WebHeaderCollection Headers
         {
-            get { return this.headers; }
+            get { return _headers; }
         }
 
         /// <summary>
@@ -116,7 +113,7 @@ namespace SharpBrake
         /// </value>
         public bool IsFromCache
         {
-            get { return this.isFromCache; }
+            get { return _isFromCache; }
         }
 
         /// <summary>
@@ -127,7 +124,7 @@ namespace SharpBrake
         /// </value>
         public bool IsMutuallyAuthenticated
         {
-            get { return this.isMutuallyAuthenticated; }
+            get { return _isMutuallyAuthenticated; }
         }
 
         /// <summary>
@@ -140,7 +137,7 @@ namespace SharpBrake
         /// </summary>
         public Uri ResponseUri
         {
-            get { return this.responseUri; }
+            get { return _responseUri; }
         }
 
 
@@ -155,7 +152,7 @@ namespace SharpBrake
                     switch (reader.LocalName)
                     {
                         case "errors":
-                            this.errors = reader.BuildErrors().ToArray();
+                            _errors = reader.BuildErrors().ToArray();
                             break;
 
                         case "notice":

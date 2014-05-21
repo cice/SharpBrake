@@ -27,8 +27,8 @@ namespace SharpBrake.Serialization
         {
             Key = key;
             Value = value == null
-                        ? null
-                        : value.ToString();
+                ? null
+                : value.ToString();
         }
 
 
@@ -63,7 +63,7 @@ namespace SharpBrake.Serialization
         ///   </exception>
         public override bool Equals(object obj)
         {
-            AirbrakeVar other = obj as AirbrakeVar;
+            var other = obj as AirbrakeVar;
 
             if (other == null)
                 return false;
@@ -80,7 +80,7 @@ namespace SharpBrake.Serialization
         /// </returns>
         public override int GetHashCode()
         {
-            int hashCode = 0;
+            var hashCode = 0;
 
             if (Key != null)
                 hashCode += Key.GetHashCode();

@@ -7,7 +7,7 @@ namespace SharpBrake.Serialization
     /// <summary>
     /// Represents the Airbrake "error" element.
     /// </summary>
-    [XmlInclude(typeof(AirbrakeTraceLine))]
+    [XmlInclude(typeof (AirbrakeTraceLine))]
     public class AirbrakeError
     {
         /// <summary>

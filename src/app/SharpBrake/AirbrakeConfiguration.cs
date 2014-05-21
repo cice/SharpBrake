@@ -22,8 +22,8 @@ namespace SharpBrake
 
             ProjectRoot = HttpRuntime.AppDomainAppVirtualPath ?? Environment.CurrentDirectory;
 
-            string[] values = ConfigurationManager.AppSettings.GetValues("Airbrake.AppVersion");
-            
+            var values = ConfigurationManager.AppSettings.GetValues("Airbrake.AppVersion");
+
             if (values != null)
                 AppVersion = values.FirstOrDefault();
         }

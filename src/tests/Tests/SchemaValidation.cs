@@ -1,8 +1,6 @@
 using System;
 using System.Xml.Schema;
-
 using NUnit.Framework;
-
 using SharpBrake.Serialization;
 
 namespace SharpBrake.Tests
@@ -18,7 +16,7 @@ namespace SharpBrake.Tests
             error.Message = "something blew up";
             error.Backtrace = new[]
             {
-                new AirbrakeTraceLine("unknown.cs", 0) { Method = "unknown" }
+                new AirbrakeTraceLine("unknown.cs", 0) {Method = "unknown"}
             };
 
             var notice = new AirbrakeNotice
@@ -31,15 +29,15 @@ namespace SharpBrake.Tests
                     Component = "MyApp.HomeController",
                     CgiData = new[]
                     {
-                        new AirbrakeVar("REQUEST_METHOD", "POST"),
+                        new AirbrakeVar("REQUEST_METHOD", "POST")
                     },
                     Params = new[]
                     {
-                        new AirbrakeVar("Form.Key1", "Form.Value1"),
+                        new AirbrakeVar("Form.Key1", "Form.Value1")
                     },
                     Session = new[]
                     {
-                        new AirbrakeVar("UserId", "1"),
+                        new AirbrakeVar("UserId", "1")
                     },
                     Url = "http://example.com/myapp",
                 },
@@ -56,7 +54,7 @@ namespace SharpBrake.Tests
             };
 
             var serializer = new CleanXmlSerializer<AirbrakeNotice>();
-            string xml = serializer.ToXml(notice);
+            var xml = serializer.ToXml(notice);
 
             AirbrakeValidator.ValidateSchema(xml);
         }
@@ -70,7 +68,7 @@ namespace SharpBrake.Tests
             error.Message = "something blew up";
             error.Backtrace = new[]
             {
-                new AirbrakeTraceLine("unknown.cs", 0) { Method = "unknown" }
+                new AirbrakeTraceLine("unknown.cs", 0) {Method = "unknown"}
             };
 
             var notice = new AirbrakeNotice
@@ -90,7 +88,7 @@ namespace SharpBrake.Tests
             };
 
             var serializer = new CleanXmlSerializer<AirbrakeNotice>();
-            string xml = serializer.ToXml(notice);
+            var xml = serializer.ToXml(notice);
 
             AirbrakeValidator.ValidateSchema(xml);
         }
@@ -104,7 +102,7 @@ namespace SharpBrake.Tests
             error.Message = "something blew up";
             error.Backtrace = new[]
             {
-                new AirbrakeTraceLine("unknown.cs", 0) { Method = "unknown" }
+                new AirbrakeTraceLine("unknown.cs", 0) {Method = "unknown"}
             };
 
             var notice = new AirbrakeNotice
@@ -128,7 +126,7 @@ namespace SharpBrake.Tests
             };
 
             var serializer = new CleanXmlSerializer<AirbrakeNotice>();
-            string xml = serializer.ToXml(notice);
+            var xml = serializer.ToXml(notice);
 
             AirbrakeValidator.ValidateSchema(xml);
         }
@@ -157,10 +155,10 @@ namespace SharpBrake.Tests
             };
 
             var serializer = new CleanXmlSerializer<AirbrakeNotice>();
-            string xml = serializer.ToXml(notice);
+            var xml = serializer.ToXml(notice);
 
             TestDelegate throwing = () => AirbrakeValidator.ValidateSchema(xml);
-            XmlSchemaValidationException exception = Assert.Throws<XmlSchemaValidationException>(throwing);
+            var exception = Assert.Throws<XmlSchemaValidationException>(throwing);
 
             Console.WriteLine(exception);
 

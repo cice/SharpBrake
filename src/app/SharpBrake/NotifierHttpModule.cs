@@ -36,11 +36,11 @@ namespace SharpBrake
         /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
         private static void ApplicationError(object sender, EventArgs e)
         {
-            var application = (HttpApplication)sender;
+            var application = (HttpApplication) sender;
 
-            Exception exception = application.Server.GetLastError();
+            var exception = application.Server.GetLastError();
 
-            if (!(exception is HttpException) || ((HttpException)exception).GetHttpCode() != 404)
+            if (!(exception is HttpException) || ((HttpException) exception).GetHttpCode() != 404)
                 exception.SendToAirbrake();
         }
     }

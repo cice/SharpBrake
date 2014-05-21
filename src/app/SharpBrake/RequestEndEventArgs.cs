@@ -9,8 +9,8 @@ namespace SharpBrake
     [Serializable]
     public class RequestEndEventArgs : EventArgs
     {
-        private readonly WebRequest request;
-        private readonly AirbrakeResponse response;
+        private readonly WebRequest _request;
+        private readonly AirbrakeResponse _response;
 
 
         /// <summary>
@@ -21,8 +21,8 @@ namespace SharpBrake
         /// <param name="content">The body of the response.</param>
         public RequestEndEventArgs(WebRequest request, WebResponse response, string content)
         {
-            this.request = request;
-            this.response = new AirbrakeResponse(response, content);
+            _request = request;
+            _response = new AirbrakeResponse(response, content);
         }
 
 
@@ -31,7 +31,7 @@ namespace SharpBrake
         /// </summary>
         public WebRequest Request
         {
-            get { return this.request; }
+            get { return _request; }
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace SharpBrake
         /// </summary>
         public AirbrakeResponse Response
         {
-            get { return this.response; }
+            get { return _response; }
         }
     }
 }

@@ -1,11 +1,8 @@
 using System;
 using System.IO;
 using System.Linq.Expressions;
-
 using NUnit.Framework;
-
 using SharpBrake.Serialization;
-
 using Subtext.TestLibrary;
 
 namespace SharpBrake.Tests
@@ -13,20 +10,16 @@ namespace SharpBrake.Tests
     [TestFixture]
     public class NoticeComponentsCreation
     {
-        #region Setup/Teardown
-
         [SetUp]
         public void SetUp()
         {
-            this.config = new AirbrakeConfiguration
+            config = new AirbrakeConfiguration
             {
                 ApiKey = "123456",
                 EnvironmentName = "test"
             };
-            this.builder = new AirbrakeNoticeBuilder(this.config);
+            builder = new AirbrakeNoticeBuilder(config);
         }
-
-        #endregion
 
         private AirbrakeConfiguration config;
         private AirbrakeNoticeBuilder builder;
@@ -46,10 +39,10 @@ namespace SharpBrake.Tests
                 exception = testException;
             }
 
-            AirbrakeError error = this.builder.ErrorFromException(exception);
+            var error = builder.ErrorFromException(exception);
             Assert.That(error.Backtrace, Has.Length.GreaterThan(0));
 
-            AirbrakeTraceLine trace = error.Backtrace[0];
+            var trace = error.Backtrace[0];
             Assert.That(trace.Method, Is.EqualTo("Building_error_from_dotNET_exception"));
             Assert.That(trace.LineNumber, Is.GreaterThan(0));
         }
@@ -61,7 +54,7 @@ namespace SharpBrake.Tests
             AirbrakeNotice notice = null;
             const string url = "http://example.com/?Query.Key1=Query.Value1&Query.Key2=Query.Value2";
             const string referer = "http://github.com/";
-            string physicalApplicationPath = Environment.CurrentDirectory + Path.DirectorySeparatorChar;
+            var physicalApplicationPath = Environment.CurrentDirectory + Path.DirectorySeparatorChar;
             var httpSimulator = new HttpSimulator("/", physicalApplicationPath)
                 .SetFormVariable("Form.Key1", "Form.Value1")
                 .SetFormVariable("Form.Key2", "Form.Value2")
@@ -78,12 +71,12 @@ namespace SharpBrake.Tests
                 }
                 catch (Exception exception)
                 {
-                    AirbrakeError error = this.builder.ErrorFromException(exception);
-                    notice = this.builder.Notice(error);
+                    var error = builder.ErrorFromException(exception);
+                    notice = builder.Notice(error);
                 }
             }
 
-            Console.WriteLine(CleanXmlSerializer.ToXml(notice));
+            Console.WriteLine(AbstractCleanXmlSerializer.ToXml(notice));
 
             Assert.That(notice, Is.Not.Null);
             Assert.That(notice.Error, Is.Not.Null);
@@ -93,21 +86,21 @@ namespace SharpBrake.Tests
             // since it requires HttpSimulator which in turn requires .NET 4.0, which in turn requires Visual Studio 2010.
             Assert.That(notice.Request, Is.Not.Null);
             Assert.That(notice.Request.Url, Is.EqualTo(url));
-            Assert.That(notice.Request.Component, Is.EqualTo(typeof(Thrower).FullName));
+            Assert.That(notice.Request.Component, Is.EqualTo(typeof (Thrower).FullName));
             Assert.That(notice.Request.Action, Is.EqualTo("Throw"));
 
             Assert.That(notice.Request.CgiData,
-                        Contains.Item(new AirbrakeVar("Content-Type", "application/x-www-form-urlencoded")));
+                Contains.Item(new AirbrakeVar("Content-Type", "application/x-www-form-urlencoded")));
             Assert.That(notice.Request.CgiData,
-                        Contains.Item(new AirbrakeVar("Header.Key1", "Header.Value1")));
+                Contains.Item(new AirbrakeVar("Header.Key1", "Header.Value1")));
             Assert.That(notice.Request.CgiData,
-                        Contains.Item(new AirbrakeVar("Header.Key2", "Header.Value2")));
+                Contains.Item(new AirbrakeVar("Header.Key2", "Header.Value2")));
             Assert.That(notice.Request.CgiData, Contains.Item(new AirbrakeVar("Referer", referer)));
 
             Assert.That(notice.Request.Params,
-                        Contains.Item(new AirbrakeVar("APPL_PHYSICAL_PATH", physicalApplicationPath)));
+                Contains.Item(new AirbrakeVar("APPL_PHYSICAL_PATH", physicalApplicationPath)));
             Assert.That(notice.Request.Params,
-                        Contains.Item(new AirbrakeVar("QUERY_STRING", "Query.Key1=Query.Value1&Query.Key2=Query.Value2")));
+                Contains.Item(new AirbrakeVar("QUERY_STRING", "Query.Key1=Query.Value1&Query.Key2=Query.Value2")));
             Assert.That(notice.Request.Params, Contains.Item(new AirbrakeVar("Form.Key1", "Form.Value1")));
             Assert.That(notice.Request.Params, Contains.Item(new AirbrakeVar("Form.Key2", "Form.Value2")));
             Assert.That(notice.Request.Params, Contains.Item(new AirbrakeVar("Query.Key1", "Query.Value1")));
@@ -119,7 +112,7 @@ namespace SharpBrake.Tests
         [Test]
         public void Notice_contains_ServerEnvironment_and_Notifier()
         {
-            AirbrakeNotice notice = this.builder.Notice((AirbrakeError)null);
+            var notice = builder.Notice((AirbrakeError) null);
             Assert.That(notice.ServerEnvironment, Is.Not.Null);
             Assert.That(notice.ServerEnvironment.ProjectRoot, Is.Not.Null);
             Assert.That(notice.ServerEnvironment.EnvironmentName, Is.Not.Null);
@@ -132,7 +125,7 @@ namespace SharpBrake.Tests
         [Test]
         public void Notifier_initialized_correctly()
         {
-            AirbrakeNotifier notifier = this.builder.Notifier;
+            var notifier = builder.Notifier;
             Assert.That(notifier.Name, Is.EqualTo("SharpBrake"));
             Assert.That(notifier.Url, Is.EqualTo("https://github.com/asbjornu/SharpBrake"));
             Assert.That(notifier.Version, Is.EqualTo("2.2.1.0"));
@@ -142,8 +135,8 @@ namespace SharpBrake.Tests
         [Test]
         public void Server_environment_read_from_Airbrake_config()
         {
-            AirbrakeServerEnvironment environment = this.builder.ServerEnvironment;
-            Assert.That(environment.EnvironmentName, Is.EqualTo(this.config.EnvironmentName));
+            var environment = builder.ServerEnvironment;
+            Assert.That(environment.EnvironmentName, Is.EqualTo(config.EnvironmentName));
         }
 
 
@@ -154,7 +147,7 @@ namespace SharpBrake.Tests
 
             try
             {
-                Expression<Func<int>> inner = () => ((string)null).Length;
+                Expression<Func<int>> inner = () => ((string) null).Length;
 
                 inner.Compile()();
             }
@@ -163,7 +156,7 @@ namespace SharpBrake.Tests
                 exception = testException;
             }
 
-            AirbrakeError error = this.builder.ErrorFromException(exception);
+            var error = builder.ErrorFromException(exception);
 
             Assert.That(error, Is.Not.Null);
         }

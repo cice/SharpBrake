@@ -5,7 +5,7 @@ namespace SharpBrake
     /// </summary>
     public class AirbrakeResponseError
     {
-        private readonly string message;
+        private readonly string _message;
 
 
         /// <summary>
@@ -14,7 +14,7 @@ namespace SharpBrake
         /// <param name="message">The message.</param>
         public AirbrakeResponseError(string message)
         {
-            this.message = message;
+            _message = message;
         }
 
 
@@ -23,7 +23,7 @@ namespace SharpBrake
         /// </summary>
         public string Message
         {
-            get { return this.message; }
+            get { return _message; }
         }
 
 
@@ -35,7 +35,7 @@ namespace SharpBrake
         /// </returns>
         public override string ToString()
         {
-            return this.message;
+            return _message;
         }
     }
 }

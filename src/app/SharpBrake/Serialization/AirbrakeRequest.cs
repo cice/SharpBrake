@@ -7,7 +7,7 @@ namespace SharpBrake.Serialization
     /// <summary>
     /// Optional. If this error occurred during an HTTP request, the children of this element can be used to describe the request that caused the error.
     /// </summary>
-    [XmlInclude(typeof(AirbrakeVar))]
+    [XmlInclude(typeof (AirbrakeVar))]
     public class AirbrakeRequest
     {
         private AirbrakeVar[] cgiData;
@@ -67,8 +67,8 @@ namespace SharpBrake.Serialization
         [XmlArrayItem("var")]
         public AirbrakeVar[] CgiData
         {
-            get { return this.cgiData != null && this.cgiData.Any() ? this.cgiData : null; }
-            set { this.cgiData = value; }
+            get { return cgiData != null && cgiData.Any() ? cgiData : null; }
+            set { cgiData = value; }
         }
 
         /// <summary>
@@ -90,8 +90,8 @@ namespace SharpBrake.Serialization
         [XmlArrayItem("var")]
         public AirbrakeVar[] Params
         {
-            get { return this.parameters != null && this.parameters.Any() ? this.parameters : null; }
-            set { this.parameters = value; }
+            get { return parameters != null && parameters.Any() ? parameters : null; }
+            set { parameters = value; }
         }
 
         /// <summary>
@@ -104,8 +104,8 @@ namespace SharpBrake.Serialization
         [XmlArrayItem("var")]
         public AirbrakeVar[] Session
         {
-            get { return this.session != null && this.session.Any() ? this.session : null; }
-            set { this.session = value; }
+            get { return session != null && session.Any() ? session : null; }
+            set { session = value; }
         }
 
         /// <summary>

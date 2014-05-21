@@ -6,9 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Web;
 using System.Web.SessionState;
-
 using Common.Logging;
-
 using SharpBrake.Serialization;
 
 namespace SharpBrake
@@ -18,10 +16,10 @@ namespace SharpBrake
     /// </summary>
     public class AirbrakeNoticeBuilder
     {
-        private readonly AirbrakeConfiguration configuration;
-        private readonly ILog log;
-        private AirbrakeServerEnvironment environment;
-        private AirbrakeNotifier notifier;
+        private readonly AirbrakeConfiguration _configuration;
+        private readonly ILog _log;
+        private AirbrakeServerEnvironment _environment;
+        private AirbrakeNotifier _notifier;
 
 
         /// <summary>
@@ -42,8 +40,8 @@ namespace SharpBrake
             if (configuration == null)
                 throw new ArgumentNullException("configuration");
 
-            this.configuration = configuration;
-            this.log = LogManager.GetLogger(GetType());
+            _configuration = configuration;
+            _log = LogManager.GetLogger(GetType());
         }
 
 
@@ -52,7 +50,7 @@ namespace SharpBrake
         /// </summary>
         public AirbrakeConfiguration Configuration
         {
-            get { return this.configuration; }
+            get { return _configuration; }
         }
 
         /// <summary>
@@ -62,11 +60,11 @@ namespace SharpBrake
         {
             get
             {
-                return this.notifier ?? (this.notifier = new AirbrakeNotifier
+                return _notifier ?? (_notifier = new AirbrakeNotifier
                 {
                     Name = "SharpBrake",
                     Url = "https://github.com/asbjornu/SharpBrake",
-                    Version = typeof(AirbrakeNotice).Assembly.GetName().Version.ToString()
+                    Version = typeof (AirbrakeNotice).Assembly.GetName().Version.ToString()
                 });
             }
         }
@@ -78,11 +76,11 @@ namespace SharpBrake
         {
             get
             {
-                string env = this.configuration.EnvironmentName;
-                return this.environment ?? (this.environment = new AirbrakeServerEnvironment(env)
+                var env = _configuration.EnvironmentName;
+                return _environment ?? (_environment = new AirbrakeServerEnvironment(env)
                 {
-                    ProjectRoot = this.configuration.ProjectRoot,
-                    AppVersion = this.configuration.AppVersion,
+                    ProjectRoot = _configuration.ProjectRoot,
+                    AppVersion = _configuration.AppVersion,
                 });
             }
         }
@@ -100,7 +98,7 @@ namespace SharpBrake
             if (exception == null)
                 throw new ArgumentNullException("exception");
 
-            this.log.Debug(f => f("{0}.Notice({1})", GetType(), exception.GetType()), exception);
+            _log.Debug(f => f("{0}.Notice({1})", GetType(), exception.GetType()), exception);
 
             MethodBase catchingMethod;
             var backtrace = BuildBacktrace(exception, out catchingMethod);
@@ -123,7 +121,7 @@ namespace SharpBrake
         /// <returns></returns>
         public AirbrakeNotice Notice(AirbrakeError error)
         {
-            this.log.Debug(f => f("{0}.Notice({1})", GetType(), error));
+            _log.Debug(f => f("{0}.Notice({1})", GetType(), error));
 
             var notice = new AirbrakeNotice
             {
@@ -133,9 +131,9 @@ namespace SharpBrake
                 ServerEnvironment = ServerEnvironment,
             };
 
-            MethodBase catchingMethod = (error != null)
-                                            ? error.CatchingMethod
-                                            : null;
+            var catchingMethod = (error != null)
+                ? error.CatchingMethod
+                : null;
 
             AddContextualInformation(notice, catchingMethod);
 
@@ -155,9 +153,9 @@ namespace SharpBrake
             if (exception == null)
                 throw new ArgumentNullException("exception");
 
-            this.log.Info(f => f("{0}.Notice({1})", GetType(), exception.GetType()), exception);
+            _log.Info(f => f("{0}.Notice({1})", GetType(), exception.GetType()), exception);
 
-            AirbrakeError error = ErrorFromException(exception);
+            var error = ErrorFromException(exception);
 
             return Notice(error);
         }
@@ -238,7 +236,7 @@ namespace SharpBrake
 
         private AirbrakeTraceLine[] BuildBacktrace(Exception exception, out MethodBase catchingMethod)
         {
-            Assembly assembly = Assembly.GetExecutingAssembly();
+            var assembly = Assembly.GetExecutingAssembly();
 
             if (assembly.EntryPoint == null)
                 assembly = Assembly.GetCallingAssembly();
@@ -247,47 +245,47 @@ namespace SharpBrake
                 assembly = Assembly.GetEntryAssembly();
 
             catchingMethod = assembly == null
-                                 ? null
-                                 : assembly.EntryPoint;
+                ? null
+                : assembly.EntryPoint;
 
-            List<AirbrakeTraceLine> lines = new List<AirbrakeTraceLine>();
+            var lines = new List<AirbrakeTraceLine>();
             var stackTrace = new StackTrace(exception);
-            StackFrame[] frames = stackTrace.GetFrames();
+            var frames = stackTrace.GetFrames();
 
             if (frames == null || frames.Length == 0)
             {
                 // Airbrake requires that at least one line is present in the XML.
-                AirbrakeTraceLine line = new AirbrakeTraceLine("none", 0);
+                var line = new AirbrakeTraceLine("none", 0);
                 lines.Add(line);
                 return lines.ToArray();
             }
 
             foreach (StackFrame frame in frames)
             {
-                MethodBase method = frame.GetMethod();
+                var method = frame.GetMethod();
 
                 catchingMethod = method;
 
-                int lineNumber = frame.GetFileLineNumber();
+                var lineNumber = frame.GetFileLineNumber();
 
                 if (lineNumber == 0)
                 {
-                    this.log.Debug(f => f("No line number found in {0}, using IL offset instead.", method));
+                    _log.Debug(f => f("No line number found in {0}, using IL offset instead.", method));
                     lineNumber = frame.GetILOffset();
                 }
 
-                string file = frame.GetFileName();
+                var file = frame.GetFileName();
 
                 if (String.IsNullOrEmpty(file))
                 {
                     // ReSharper disable ConditionIsAlwaysTrueOrFalse
                     file = method.ReflectedType != null
-                               ? method.ReflectedType.FullName
-                               : "(unknown)";
+                        ? method.ReflectedType.FullName
+                        : "(unknown)";
                     // ReSharper restore ConditionIsAlwaysTrueOrFalse
                 }
 
-                AirbrakeTraceLine line = new AirbrakeTraceLine(file, lineNumber)
+                var line = new AirbrakeTraceLine(file, lineNumber)
                 {
                     Method = method.Name
                 };
@@ -303,16 +301,16 @@ namespace SharpBrake
         {
             if ((cookies == null) || (cookies.Count == 0))
             {
-                this.log.Debug(f => f("No cookies to build vars from."));
+                _log.Debug(f => f("No cookies to build vars from."));
                 return new AirbrakeVar[0];
             }
 
             return from key in cookies.Keys.Cast<string>()
-                   where !String.IsNullOrEmpty(key)
-                   let cookie = cookies[key]
-                   let value = cookie != null ? cookie.Value : null
-                   where !String.IsNullOrEmpty(value)
-                   select new AirbrakeVar(key, value);
+                where !String.IsNullOrEmpty(key)
+                let cookie = cookies[key]
+                let value = cookie != null ? cookie.Value : null
+                where !String.IsNullOrEmpty(value)
+                select new AirbrakeVar(key, value);
         }
 
 
@@ -320,15 +318,15 @@ namespace SharpBrake
         {
             if ((formData == null) || (formData.Count == 0))
             {
-                this.log.Debug(f => f("No form data to build vars from."));
+                _log.Debug(f => f("No form data to build vars from."));
                 return new AirbrakeVar[0];
             }
 
             return from key in formData.AllKeys
-                   where !String.IsNullOrEmpty(key)
-                   let value = formData[key]
-                   where !String.IsNullOrEmpty(value)
-                   select new AirbrakeVar(key, value);
+                where !String.IsNullOrEmpty(key)
+                let value = formData[key]
+                where !String.IsNullOrEmpty(value)
+                select new AirbrakeVar(key, value);
         }
 
 
@@ -336,16 +334,16 @@ namespace SharpBrake
         {
             if ((session == null) || (session.Count == 0))
             {
-                this.log.Debug(f => f("No session to build vars from."));
+                _log.Debug(f => f("No session to build vars from."));
                 return new AirbrakeVar[0];
             }
 
             return from key in session.Keys.Cast<string>()
-                   where !String.IsNullOrEmpty(key)
-                   let v = session[key]
-                   let value = v != null ? v.ToString() : null
-                   where !String.IsNullOrEmpty(value)
-                   select new AirbrakeVar(key, value);
+                where !String.IsNullOrEmpty(key)
+                let v = session[key]
+                let value = v != null ? v.ToString() : null
+                where !String.IsNullOrEmpty(value)
+                select new AirbrakeVar(key, value);
         }
     }
 }

@@ -1,7 +1,5 @@
 using System;
-
 using NUnit.Framework;
-
 using SharpBrake.Serialization;
 
 namespace SharpBrake.Tests
@@ -9,15 +7,11 @@ namespace SharpBrake.Tests
     [TestFixture]
     public class AirbrakeClientTests
     {
-        #region Setup/Teardown
-
         [SetUp]
         public void SetUp()
         {
-            this.client = new AirbrakeClient();
+            client = new AirbrakeClient();
         }
-
-        #endregion
 
         private AirbrakeClient client;
 
@@ -26,11 +20,10 @@ namespace SharpBrake.Tests
         [Ignore("This test needs to be rewritten for the 2.2 API")]
         public void Send_EndRequestEventIsInvoked_And_ResponseOnlyContainsApiError()
         {
-            bool requestEndInvoked = false;
+            var requestEndInvoked = false;
             AirbrakeResponseError[] errors = null;
-            int i = 0;
 
-            this.client.RequestEnd += (sender, e) =>
+            client.RequestEnd += (sender, e) =>
             {
                 requestEndInvoked = true;
                 errors = e.Response.Errors;
@@ -44,7 +37,7 @@ namespace SharpBrake.Tests
 
             var builder = new AirbrakeNoticeBuilder(configuration);
 
-            AirbrakeNotice notice = builder.Notice(new Exception("Test"));
+            var notice = builder.Notice(new Exception("Test"));
 
             notice.Request = new AirbrakeRequest("http://example.com", "Test")
             {
@@ -54,7 +47,7 @@ namespace SharpBrake.Tests
                 }
             };
 
-            this.client.Send(notice);
+            client.Send(notice);
 
             Assert.That(requestEndInvoked, Is.True.After(5000));
             Assert.That(errors, Is.Not.Null);

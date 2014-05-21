@@ -1,7 +1,5 @@
 using System.Xml.Serialization;
-
 using NUnit.Framework;
-
 using SharpBrake.Serialization;
 
 namespace SharpBrake.Tests
@@ -29,7 +27,7 @@ namespace SharpBrake.Tests
             };
 
             var serializer = new CleanXmlSerializer<TestNotice>();
-            string xml = serializer.ToXml(notice);
+            var xml = serializer.ToXml(notice);
 
             const string expected = @"<notice version=""2.0"">
   <api-key>123456</api-key>

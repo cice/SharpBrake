@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Xml;
-
 using SharpBrake.Serialization;
 
 namespace SharpBrake
@@ -46,7 +45,6 @@ namespace SharpBrake
             }
         }
 
-
         /// <summary>
         /// Builds the notice from the <see cref="XmlReader"/>.
         /// </summary>
@@ -59,8 +57,8 @@ namespace SharpBrake
             if (reader == null)
                 throw new ArgumentNullException("reader");
 
-            int id = 0;
-            int errorId = 0;
+            var id = 0;
+            var errorId = 0;
             string url = null;
 
             while (reader.Read())
