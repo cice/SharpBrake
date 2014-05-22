@@ -80,7 +80,7 @@
     <Content Include="Airbrake.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\app\SharpBrake\SharpBrake.2010.csproj">
+    <ProjectReference Include="..\..\app\SharpBrake\SharpBrakeCore.csproj">
       <Project>{EE7CE02E-3CA9-4D01-8D57-E98911466B44}</Project>
       <Name>SharpBrake.2010</Name>
     </ProjectReference>
