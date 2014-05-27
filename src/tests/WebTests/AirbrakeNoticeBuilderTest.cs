@@ -121,7 +121,7 @@ namespace WebTests
             var notifier = _builder.MakeNotifier();
             Assert.That(notifier.Name, Is.EqualTo("SharpBrakeWeb"));
             Assert.That(notifier.Url, Is.EqualTo("https://github.com/kayoom/SharpBrake"));
-            Assert.That(notifier.Version, Is.EqualTo("2.2.1.0"));
+            Assert.That(notifier.Version, Is.EqualTo("2.3.0.0"));
         }
     }
 }
