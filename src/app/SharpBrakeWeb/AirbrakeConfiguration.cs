@@ -10,6 +10,8 @@ namespace SharpBrakeWeb
     /// </summary>
     public class AirbrakeConfiguration : SharpBrakeCore.AirbrakeConfiguration
     {
+        private static IAirbrakeConfiguration _default;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="AirbrakeConfiguration"/> class.
         /// </summary>
@@ -33,7 +35,6 @@ namespace SharpBrakeWeb
                 AppVersion = values.FirstOrDefault();
         }
 
-        private static IAirbrakeConfiguration _default;
         public static IAirbrakeConfiguration Default
         {
             get { return _default ?? (_default = new AirbrakeConfiguration()); }

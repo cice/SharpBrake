@@ -19,7 +19,7 @@ namespace SharpBrakeWeb
                 Version = typeof (AirbrakeNotice).Assembly.GetName().Version.ToString()
             };
         }
-        
+
         protected virtual HttpContext HttpContext
         {
             get { return HttpContext.Current; }

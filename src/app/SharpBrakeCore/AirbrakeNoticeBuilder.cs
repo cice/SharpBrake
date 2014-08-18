@@ -47,27 +47,6 @@ namespace SharpBrakeCore
 
 
         /// <summary>
-        /// Creates a <see cref="AirbrakeError"/> from the the specified exception.
-        /// </summary>
-        /// <param name="exInfo"></param>
-        /// <param name="envInfo"></param>
-        /// <returns>
-        /// A <see cref="AirbrakeError"/>, created from the the specified exception.
-        /// </returns>
-        protected AirbrakeError Error(IExceptionInformation exInfo, IEnvironmentInformation envInfo)
-        {
-            var error = Activator.CreateInstance<AirbrakeError>();
-
-            error.CatchingMethod = exInfo.CatchingMethod;
-            error.Class = exInfo.ExceptionClass.FullName;
-            error.Message = exInfo.Message;
-            error.Backtrace = exInfo.TraceLines.ToArray();
-
-            return error;
-        }
-
-
-        /// <summary>
         /// Creates a <see cref="AirbrakeNotice"/> from the the specified exception.
         /// </summary>
         /// <param name="exception">The exception.</param>
@@ -91,6 +70,26 @@ namespace SharpBrakeCore
                 Error = Error(exInfo, envInfo),
                 Request = Request(exInfo, envInfo)
             };
+        }
+
+        /// <summary>
+        /// Creates a <see cref="AirbrakeError"/> from the the specified exception.
+        /// </summary>
+        /// <param name="exInfo"></param>
+        /// <param name="envInfo"></param>
+        /// <returns>
+        /// A <see cref="AirbrakeError"/>, created from the the specified exception.
+        /// </returns>
+        protected AirbrakeError Error(IExceptionInformation exInfo, IEnvironmentInformation envInfo)
+        {
+            var error = Activator.CreateInstance<AirbrakeError>();
+
+            error.CatchingMethod = exInfo.CatchingMethod;
+            error.Class = exInfo.ExceptionClass.FullName;
+            error.Message = exInfo.Message;
+            error.Backtrace = exInfo.TraceLines.ToArray();
+
+            return error;
         }
 
         protected virtual AirbrakeRequest Request(IExceptionInformation exInfo, IEnvironmentInformation envInfo)
