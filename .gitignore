@@ -1,0 +1,14 @@
+bin
+obj
+Log
+*.suo
+.*.swp
+_ReSharper*
+*.log
+Hoptoad.config
+*.docstates
+*.user
+/src/packages/
+*.nupkg
+*.tmp
+packages/

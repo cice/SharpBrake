@@ -1,0 +1,51 @@
+﻿using System;
+using System.Web;
+
+namespace SharpBrakeWeb
+{
+    /// <summary>
+    /// The <see cref="IHttpModule"/> that notifies Airbrake of unhandled exceptions in the application.
+    /// </summary>
+    public class NotifierHttpModule : IHttpModule
+    {
+        private AirbrakeClient _client;
+
+        #region IHttpModule Members
+
+        /// <summary>
+        /// Disposes of the resources (other than memory) used by the module that implements <see cref="T:System.Web.IHttpModule"/>.
+        /// </summary>
+        public void Dispose()
+        {
+            _client = null;
+        }
+
+
+        /// <summary>
+        /// Initializes a module and prepares it to handle requests.
+        /// </summary>
+        /// <param name="application">An <see cref="T:System.Web.HttpApplication"/> that provides access to the methods, properties, and events common to all application objects within an ASP.NET application</param>
+        public void Init(HttpApplication application)
+        {
+            _client = new AirbrakeClient();
+            application.Error += ApplicationError;
+        }
+
+        #endregion
+
+        /// <summary>
+        /// Notifies Airbrake of the unhandled application error that occurred.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="System.EventArgs"/> instance containing the event data.</param>
+        private void ApplicationError(object sender, EventArgs e)
+        {
+            var application = (HttpApplication) sender;
+
+            var exception = application.Server.GetLastError();
+
+            if (!(exception is HttpException) || ((HttpException) exception).GetHttpCode() != 404)
+                _client.Send(exception);
+        }
+    }
+}
