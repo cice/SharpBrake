@@ -67,7 +67,7 @@ namespace CoreTests
             var notifier = notice.Notifier;
             Assert.That(notifier.Name, Is.EqualTo("SharpBrakeCore"));
             Assert.That(notifier.Url, Is.EqualTo("https://github.com/kayoom/SharpBrake"));
-            Assert.That(notifier.Version, Is.EqualTo("2.3.0.0"));
+            Assert.That(notifier.Version, Is.EqualTo("0.1.0.0"));
         }
 
         [Test]

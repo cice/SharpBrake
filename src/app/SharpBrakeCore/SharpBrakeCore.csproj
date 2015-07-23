@@ -41,6 +41,7 @@
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\SharpBrakeCore.xml</DocumentationFile>
     <Prefer32Bit>false</Prefer32Bit>
+    <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Common.Logging.Core">
@@ -52,6 +53,7 @@
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
     <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Serialization" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AirbrakeClient.cs" />
